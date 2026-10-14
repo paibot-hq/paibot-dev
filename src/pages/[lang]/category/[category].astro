@@ -1,0 +1,20 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Feed from '../../../components/Feed.astro';
+import PageHeading from '../../../components/PageHeading.astro';
+import { t, langs } from '../../../i18n/utils.js';
+import { categories } from '../../../data/site.js';
+import { getArticles } from '../../../lib/articles.js';
+
+export function getStaticPaths() { return langs.flatMap(lang => categories.map(c => ({ params: { lang, category: c.id } }))); }
+const { lang, category } = Astro.params;
+const articles = await getArticles(lang);
+const name = categories.find(c => c.id === category).name[lang];
+---
+<Base lang={lang} title={`${name} | PAIBOT.dev`} description={t(lang, 'listText')}>
+  <div class="container subpage">
+    <PageHeading en="EXPLORE ARTICLES" title={t(lang, 'listTitle')} description={t(lang, 'listText')} />
+    <label class="search-field page-search"><span>⌕</span><input type="search" id="feed-search" placeholder={t(lang, 'listSearch')} aria-label={t(lang, 'listFilter')} /></label>
+    <Feed lang={lang} articles={articles} filter={category} />
+  </div>
+</Base>

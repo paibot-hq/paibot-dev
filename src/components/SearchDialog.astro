@@ -1,0 +1,10 @@
+---
+import { t } from '../i18n/utils.js';
+const { lang } = Astro.props;
+---
+<dialog id="search-dialog" aria-labelledby="search-title" data-index={`/${lang}/search.json`}>
+  <div class="dialog-heading"><h2 id="search-title">{t(lang, 'searchTitle')}</h2><button id="close-search" class="icon-button" aria-label={t(lang, 'searchClose')}>✕</button></div>
+  <label class="search-field"><span aria-hidden="true">⌕</span><input id="global-search" type="search" placeholder={t(lang, 'searchPlaceholder')} aria-label={t(lang, 'searchLabel')} autocomplete="off" /></label>
+  <div id="search-results" aria-live="polite"></div>
+  <p class="dialog-hint">{t(lang, 'searchHint')} <kbd>esc</kbd> {t(lang, 'searchHintClose')}</p>
+</dialog>

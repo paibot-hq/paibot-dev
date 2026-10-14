@@ -1,0 +1,17 @@
+---
+import { t } from '../i18n/utils.js';
+import { categoryOf } from '../lib/articles.js';
+import Bookmark from './Bookmark.astro';
+const { lang, article } = Astro.props;
+const cat = categoryOf(article.category, lang);
+---
+<article class="article-row" data-id={article.id}>
+  <div class="article-info">
+    <div class="article-meta"><span class="category-label">{cat.short}</span><span class="meta-dot">·</span><span>{article.type}</span><span class="read-time">{article.minutes} MIN READ</span></div>
+    <h3><a href={`/${lang}/articles/${article.id}/`}>{article.title}</a></h3>
+    <p>{article.description}</p>
+    <div class="article-bottom"><div class="tags">{article.tags.map(tag => <span class="tag">{tag}</span>)}</div><span class="level">{article.level || t(lang, 'beginner')}</span></div>
+  </div>
+  {article.hero && <a class="article-thumb" href={`/${lang}/articles/${article.id}/`} tabindex="-1" aria-hidden="true"><img src={article.hero} width="1200" height="675" alt="" loading="lazy" decoding="async" /></a>}
+  <Bookmark lang={lang} article={article} />
+</article>

@@ -1,0 +1,36 @@
+---
+import { t } from '../i18n/utils.js';
+import { categories } from '../data/site.js';
+import ArticleRow from './ArticleRow.astro';
+// filter: 'all' | カテゴリID | 'saved'
+const { lang, articles, filter = 'all', heading = true } = Astro.props;
+const shown = filter === 'all' || filter === 'saved' ? articles : articles.filter(a => a.category === filter);
+const pending = filter !== 'all' && filter !== 'saved' && shown.length === 0;
+const filters = [{ id: 'all', label: lang === 'ja' ? 'すべて' : 'All', href: `/${lang}/articles/` },
+  ...categories.map(c => ({ id: c.id, label: c.name[lang], href: `/${lang}/category/${c.id}/` })),
+  { id: 'saved', label: t(lang, 'saved'), href: `/${lang}/saved/`, saved: true }];
+---
+<section id="feed" class="feed">
+  <div class="section-heading feed-heading"><div><span class="eyebrow">ARTICLES &amp; NOTES</span><h2>{t(lang, 'feedTitle')}</h2></div><span id="result-count" class="count" aria-live="polite">{filter === 'saved' ? '' : `${shown.length} ARTICLES`}</span></div>
+  <div class="filter-row" aria-label={t(lang, 'categoriesLabel')}>
+    {filters.map(f => <a class:list={['filter', { active: f.id === filter, 'saved-filter': f.saved }]} href={f.href} aria-current={f.id === filter ? 'page' : undefined}>{f.label}</a>)}
+  </div>
+  <div class="content-columns">
+    <div id="article-list" data-filter={filter}>
+      {shown.map(article => <ArticleRow lang={lang} article={article} />)}
+      {filter === 'saved' && (
+        <div class="empty-state" id="saved-empty" hidden><span>⌕</span><h3>{t(lang, 'emptySaved')}</h3><p>{t(lang, 'emptySavedText')}</p><a class="secondary-button" href={`/${lang}/articles/`}>{t(lang, 'showAll')}</a></div>
+      )}
+      {pending && (
+        <div class="empty-state"><span>⌕</span><h3>{t(lang, 'emptySoon')}</h3><p>{t(lang, 'emptySoonText')}</p><a class="secondary-button" href={`/${lang}/articles/`}>{t(lang, 'showAll')}</a></div>
+      )}
+    </div>
+    <aside class="sidebar">
+      <section class="desk-index"><div class="section-heading"><h3>{t(lang, 'sideAll')}</h3><span class="eyebrow">TOPICS</span></div>
+        {articles.map((a, i) => <a href={`/${lang}/articles/${a.id}/`}><span>{String(i + 1).padStart(2, '0')}</span><div>{a.title}<small>{a.type} · {t(lang, 'minutes', a.minutes)}</small></div>↗</a>)}
+      </section>
+      <section class="start-card"><span class="eyebrow">READING GUIDE</span><h3 set:html={t(lang, 'sideStartTitle')} /><p>{t(lang, 'sideStartText')}</p><a href={`/${lang}/guides/`}>{t(lang, 'sideStartLink')} <span>→</span></a></section>
+      <section class="resource-sidebar"><div class="section-heading"><h3>{t(lang, 'sideTools')}</h3><span class="eyebrow">TOOLBOX</span></div><a class="resource-link" href={`/${lang}/tools/`}><span><strong>{t(lang, 'sideJson')}</strong><small>{t(lang, 'sideJsonText')}</small></span><span aria-hidden="true">↗</span></a></section>
+    </aside>
+  </div>
+</section>

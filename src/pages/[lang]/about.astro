@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import { t, langs } from '../../i18n/utils.js';
+import { getArticles } from '../../lib/articles.js';
+
+export function getStaticPaths() { return langs.map(lang => ({ params: { lang } })); }
+const { lang } = Astro.params;
+const n = (await getArticles(lang)).length;
+---
+<Base lang={lang} title={`${t(lang, 'aboutTitle')} | PAIBOT.dev`} description={t(lang, 'aboutLead')}>
+  <div class="container subpage about-page">
+    <PageHeading en="ABOUT / EDITORIAL POLICY" title={t(lang, 'aboutTitle')} description={t(lang, 'aboutLead')} />
+    <div class="about-content">
+      <div class="about-label">PAIBOT<br />DEVELOPMENT<br />JOURNAL</div>
+      <div>
+        <h2>{t(lang, 'aboutH1')}</h2><p>{t(lang, 'aboutP1')}</p><p>{t(lang, 'aboutP2', n)}</p>
+        <h2>{t(lang, 'aboutH2')}</h2><p>{t(lang, 'aboutP3', n)}</p>
+        <h2>{t(lang, 'aboutH3')}</h2><p>{t(lang, 'aboutP4')}</p>
+        <a class="primary-button" href={`/${lang}/articles/`}>{t(lang, 'viewArticles')} →</a>
+      </div>
+    </div>
+  </div>
+</Base>

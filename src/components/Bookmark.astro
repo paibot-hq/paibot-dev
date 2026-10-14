@@ -1,0 +1,5 @@
+---
+import { t } from '../i18n/utils.js';
+const { lang, article } = Astro.props;
+---
+<button class="bookmark" type="button" data-save={article.id} data-title={article.title} aria-pressed="false" aria-label={t(lang, 'saveLabel', article.title)}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg></button>

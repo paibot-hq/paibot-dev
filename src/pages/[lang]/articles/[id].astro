@@ -1,0 +1,47 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Bookmark from '../../../components/Bookmark.astro';
+import { t, langs } from '../../../i18n/utils.js';
+import { getArticles, categoryOf, render } from '../../../lib/articles.js';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of langs) for (const a of await getArticles(lang)) paths.push({ params: { lang, id: a.id }, props: { article: a } });
+  return paths;
+}
+const { lang } = Astro.params;
+const { article } = Astro.props;
+const { Content, headings } = await render(article.entry);
+const toc = headings.filter(h => h.depth === 2);
+const cat = categoryOf(article.category, lang);
+const all = await getArticles(lang);
+// 同じカテゴリの記事を優先し、足りなければ他のカテゴリの記事で埋める
+const others = all.filter(a => a.id !== article.id);
+const next = [...others.filter(a => a.category === article.category), ...others.filter(a => a.category !== article.category)].slice(0, 2);
+---
+<Base lang={lang} title={`${article.title} | PAIBOT.dev`} description={article.description}>
+  <div class="reader-layout container">
+    <article class="reader">
+      <a href={`/${lang}/articles/`} class="back-link">← {t(lang, 'back')}</a>
+      <header class="reader-header">
+        {article.hero && <figure class="hero"><img src={article.hero} width="1200" height="675" alt="" decoding="async" /><figcaption class="hero-tag">{t(lang, 'aiImage')}</figcaption></figure>}
+        <div class="article-meta"><span class="category-label">{cat.short}</span><span class="meta-dot">·</span><span>{article.type}</span></div>
+        <h1>{article.title}</h1>
+        <p>{article.description}</p>
+        <div class="reader-meta"><span>{t(lang, 'author')} · {t(lang, 'minutes', article.minutes)} · {article.level || t(lang, 'beginner')}</span><Bookmark lang={lang} article={article} /></div>
+        <div class="tags">{article.tags.map(tag => <span class="tag">{tag}</span>)}</div>
+      </header>
+      {article.takeaway && <div class="takeaway"><span class="eyebrow">{t(lang, 'takeaway')}</span><p>{article.takeaway}</p></div>}
+      <div class="reader-body">
+        <Content />
+        {article.sources.length > 0 && <section class="source-box"><h2>{t(lang, 'sources')}</h2>{article.sources.map(s => <a href={s.url} target="_blank" rel="noopener noreferrer">{s.title} ↗</a>)}</section>}
+      </div>
+      <section class="related-articles"><span class="eyebrow">READ NEXT</span><h2>{t(lang, 'readNext')}</h2>{next.map(a => <a href={`/${lang}/articles/${a.id}/`}>{a.title}<span>→</span></a>)}</section>
+      <div class="reader-end"><span>PAIBOT / DEVELOPMENT JOURNAL</span><a href={`/${lang}/articles/`} class="text-link">{t(lang, 'backEnd')} →</a></div>
+    </article>
+    <aside class="table-of-contents"><span class="eyebrow">CONTENTS</span><h3>{t(lang, 'contents')}</h3>
+      {toc.map((h, i) => <a href={`#${h.slug}`} class="toc-item">{String(i + 1).padStart(2, '0')} <span>{h.text}</span></a>)}
+      <a class="toc-guide" href={`/${lang}/guides/`}>{t(lang, 'guidesByTheme')} ↗</a>
+    </aside>
+  </div>
+</Base>

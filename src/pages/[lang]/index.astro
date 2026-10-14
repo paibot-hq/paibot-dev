@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import Feed from '../../components/Feed.astro';
+import { t, langs } from '../../i18n/utils.js';
+import { categories, guides } from '../../data/site.js';
+import { getArticles, categoryOf } from '../../lib/articles.js';
+
+export function getStaticPaths() { return langs.map(lang => ({ params: { lang } })); }
+const { lang } = Astro.params;
+const articles = await getArticles(lang);
+const featured = articles[0];
+const related = articles.slice(1, 4);
+const featuredCat = categoryOf(featured.category, lang);
+---
+<Base lang={lang} title={t(lang, 'docTitle')}>
+  <div class="container">
+    <section class="portal-intro"><div><span class="intro-label">Engineering, in practice.</span><h1>{t(lang, 'heroTitle')}</h1></div><p set:html={t(lang, 'heroText')} /></section>
+    <section class="editorial-feature" aria-label={t(lang, 'featured')}>
+      <a class="lead-story" href={`/${lang}/articles/${featured.id}/`}>
+        <div class="lead-caption"><span class="eyebrow">FEATURED ARTICLE</span><span>{featuredCat.short.toUpperCase()}</span></div>
+        <div class="lead-grid">
+          <div><h2>{featured.title}</h2><p>{featured.description}</p><span class="story-link">{t(lang, 'readArticle')} <span>↗</span></span></div>
+          <div class="ai-process" aria-hidden="true"><span class="eyebrow">AI WORKFLOW</span>
+            <div><span>01</span><strong>{t(lang, 'process')[0]}</strong><small>Define</small></div>
+            <div><span>02</span><strong>{t(lang, 'process')[1]}</strong><small>Generate</small></div>
+            <div><span>03</span><strong>{t(lang, 'process')[2]}</strong><small>Verify</small></div>
+          </div>
+        </div>
+        <div class="lead-footer"><span>{featured.tags.join(' / ')}</span><span>{featured.minutes} MIN READ →</span></div>
+      </a>
+      <aside class="feature-index"><span class="eyebrow">{t(lang, 'related')}</span>
+        {related.map(a => <a href={`/${lang}/articles/${a.id}/`}><div><span class="category-label">{categoryOf(a.category, lang).short.toUpperCase()}</span></div><h3>{a.title}</h3><span class="index-bottom">{a.type} · {t(lang, 'minutes', a.minutes)} <b>↗</b></span></a>)}
+        <a href={`/${lang}/guides/`}><div><span class="category-label">READING GUIDE</span></div><h3>{t(lang, 'guideCardTitle')}</h3><span class="index-bottom">{t(lang, 'readInOrder', articles.length)} <b>↗</b></span></a>
+      </aside>
+    </section>
+    <div class="topic-strip">
+      {categories.map(c => { const count = articles.filter(a => a.category === c.id).length; return <a href={`/${lang}/category/${c.id}/`}><strong>{c.name[lang]}</strong><small>{count ? t(lang, 'articleCount', count) : t(lang, 'soon')}</small><span>↗</span></a>; })}
+    </div>
+    <Feed lang={lang} articles={articles} />
+  </div>
+</Base>

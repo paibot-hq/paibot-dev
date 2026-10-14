@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import { t, langs } from '../../i18n/utils.js';
+import { guides } from '../../data/site.js';
+import { getArticles } from '../../lib/articles.js';
+
+export function getStaticPaths() { return langs.map(lang => ({ params: { lang } })); }
+const { lang } = Astro.params;
+const articles = await getArticles(lang);
+---
+<Base lang={lang} title={`${t(lang, 'guidesTitle')} | PAIBOT.dev`} description={t(lang, 'guidesText')}>
+  <div class="container subpage">
+    <PageHeading en="LEARNING PATHS" title={t(lang, 'guidesTitle')} description={t(lang, 'guidesText')} />
+    <div class="guide-grid">
+      {guides.map((g, index) => (
+        <section class="guide-card">
+          <div class="guide-top"><span>{g.icon}</span><small>PATH 0{index + 1}</small></div>
+          <h2>{g.title[lang]}</h2><p>{g.description[lang]}</p>
+          <ol>{g.ids.map(id => { const a = articles.find(a => a.id === id); return <li><a href={`/${lang}/articles/${id}/`}>{a.title}<small>{t(lang, 'minutes', a.minutes)} <span>→</span></small></a></li>; })}</ol>
+          <div class="guide-summary">{g.ids.length} ARTICLES <span>{t(lang, 'guideSummary')}</span></div>
+        </section>
+      ))}
+    </div>
+    <div class="inline-note">{t(lang, 'guidesNote')}</div>
+  </div>
+</Base>

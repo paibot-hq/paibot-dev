@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeading from '../../components/PageHeading.astro';
+import { t, langs } from '../../i18n/utils.js';
+import { resources, appTools } from '../../data/site.js';
+
+export function getStaticPaths() { return langs.map(lang => ({ params: { lang } })); }
+const { lang } = Astro.params;
+---
+<Base lang={lang} title={`${t(lang, 'toolsTitle')} | PAIBOT.dev`} description={t(lang, 'toolsText')}>
+  <div class="container subpage">
+    <PageHeading en="DEVELOPER TOOLBOX" title={t(lang, 'toolsTitle')} description={t(lang, 'toolsText')} />
+    <div class="section-heading tools-heading"><h2>{t(lang, 'appToolsTitle')}</h2><span class="eyebrow">PAIBOT APP</span></div>
+    <div class="resource-grid">
+      {appTools.map(tool => <a href={`https://paibot.app/${lang}/${tool.slug}`} class="resource-card"><div><span class="resource-mark">{tool.slug}</span><span aria-hidden="true">↗</span></div><h3>{tool.title[lang]}</h3><p>{tool.description[lang]}</p><span class="text-link">{t(lang, 'appToolsOpen')} ↗</span></a>)}
+    </div>
+    <div class="section-heading tools-heading"><h2>{t(lang, 'docsTitle')}</h2><span class="eyebrow">GO TO THE SOURCE</span></div>
+    <div class="resource-grid">
+      {resources.map(r => <a href={r.url} target="_blank" rel="noopener noreferrer" class="resource-card"><div><span class="resource-mark">{r.mark}</span><span aria-hidden="true">↗</span></div><h3>{r.name}</h3><p>{r.description[lang]}</p><span class="text-link">{t(lang, 'docsOpen')} ↗</span></a>)}
+    </div>
+  </div>
+</Base>

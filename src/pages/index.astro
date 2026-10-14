@@ -1,0 +1,21 @@
+---
+// ルートは、保存済みの言語か、ブラウザの言語に合わせて /ja/ か /en/ へ移動する。
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="0; url=/ja/" />
+    <title>PAIBOT.dev</title>
+    <script is:inline>
+      (function () {
+        var lang = null;
+        try { lang = localStorage.getItem('paibot-lang'); } catch (e) {}
+        if (lang !== 'ja' && lang !== 'en') lang = (navigator.language || 'ja').toLowerCase().indexOf('ja') === 0 ? 'ja' : 'en';
+        location.replace('/' + lang + '/' + location.search + location.hash);
+      })();
+    </script>
+  </head>
+  <body><a href="/ja/">日本語</a> / <a href="/en/">English</a></body>
+</html>
