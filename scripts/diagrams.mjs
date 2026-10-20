@@ -148,6 +148,22 @@ function planFlow(L) {
 }
 
 
+// ---- メンタルヘルス: 気づく→止める→話す→戻す ----
+function mhFlow(L) {
+  const T = L === 'ja'
+    ? { title: '燃え尽きる前の4つの手順', steps: [['気づく', '2週間以上続くサインを、日付つきでメモする'], ['小さく止める', '通知を切る、断る、睡眠を守る'], ['人に話す', '同僚・上司・産業医・相談窓口'], ['戻す', '負荷を下げたまま、少しずつ元の進め方に戻す']], cap: '図{{N}} 大きく崩れる前の、小さな段階で手を打つ。3の「話す」は、1や2と並行して、いつでも使ってよい。' }
+    : { title: 'Four steps before you burn out', steps: [['Notice', 'Note signs lasting two weeks or more, with dates'], ['Step back a little', 'Turn off notifications, say no, protect sleep'], ['Talk to someone', 'Colleague, manager, occupational physician, support line'], ['Recover', 'Keep the load lower; return to your pace slowly']], cap: 'Figure {{N}}. Act at the small stage, before a big collapse. Step 3, talking, can be used at any time alongside 1 and 2.' };
+  let b = '';
+  T.steps.forEach(([h, sub], i) => {
+    const y = 10 + i * 78;
+    b += rect(20, y, 360, 56, 'd-ok');
+    b += `<circle cx="46" cy="${y + 28}" r="12" class="d-accent"/>` + txt(46, y + 32.5, i + 1, 'd-white', 'middle');
+    b += txt(70, y + 24, h, 'd-strong') + txt(70, y + 42, sub, 'd-small');
+    if (i < 3) b += arrow('mh-a', `M200 ${y + 58} V${y + 76}`);
+  });
+  return figure('mh', 400, 322, T.title, b, T.cap);
+}
+
 // ---- Transformer: 学習前の乱数の重みで、attention を1ヘッド分計算する(記事のコードと同じ式) ----
 const ATTN_TOKENS = ['the', 'model', 'predicts', 'the', 'next'];
 function attention(seed = 2, d = 4) {
@@ -719,15 +735,15 @@ function insert(file, headingPart, html, where = 'paragraph') {
   writeFileSync(p, lines.join('\n'));
   console.log('inserted:', file, headingPart);
 }
-for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models']) for (const L of ['ja', 'en']) {
+for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health']) for (const L of ['ja', 'en']) {
   const pth = dir + `${L}/${f}.md`; const lines = readFileSync(pth, 'utf8').split('\n'); const kept = [];
   lines.forEach((l, i) => { if (l.startsWith('<figure class="diagram">')) { if (kept.at(-1) === '') kept.pop(); } else kept.push(l); });
   writeFileSync(pth, kept.join('\n'));
 }
 for (const L of ['ja', 'en']) {
   const H = L === 'ja'
-    ? { llm1: '次の1語を、確率で選ぶ', llm2: '温度:選び方の偏りを調整する', llm3: 'コンテキストウィンドウ:作業用の記憶', env1: '結果を先に', str1: '先に結果', tf1: '全体像', tf2: '結果を読む', tf3: '1行を詳しく見る', perm: 'allow・ask・denyのルール', md: 'どこに置くか', plan: '変更の前に、計画を見る', ll1: 'ローカルLLMとは', ll2: '必要なメモリを見積もる', sv1: '重みのほかに必要なもの', sv2: '複数人で使う', rag: '作るもの', pa: '全体のアーキテクチャ', pp: '権限は、検索の前に絞る', ag: '全体の構造', aw: '典型的なWebアプリの構成', sk: '全体の構成', df: 'デプロイの流れ', co: '全体の構成', k8: '全体のアーキテクチャ', gw: 'ゲートウェイ', sc: 'スケーリング', vc: 'データ層とベクトルDB', mr: 'モデルの役割と候補', dl1: 'ディープラーニングとは', dl2: '学習の流れ', lm1: '5つの軸で分ける', lm2: '選び方' }
-    : { llm1: 'Choosing the next word by probability', llm2: 'Temperature: adjusting how skewed', llm3: 'The context window: working memory', env1: 'The results first', str1: 'The results first', tf1: 'The big picture', tf2: 'Reading the result', tf3: 'Looking closely at one row', perm: 'allow, ask and deny rules', md: 'Where to put it', plan: 'See the plan before changing anything', ll1: 'What a local LLM is', ll2: 'Estimating the memory you need', sv1: 'Beyond the weights', sv2: 'Serving several people', rag: 'What we will build', pa: 'Overall architecture', pp: 'Permissions: filter before searching', ag: 'The structure', aw: 'A typical web app architecture', sk: 'The overall setup', df: 'The deployment flow', co: 'The overall setup', k8: 'Overall architecture', gw: 'Gateway', sc: 'Scaling', vc: 'Data layer and the vector database', mr: 'Roles and candidates', dl1: 'What deep learning is', dl2: 'How learning works', lm1: 'Sort along five axes', lm2: 'How to choose' };
+    ? { llm1: '次の1語を、確率で選ぶ', llm2: '温度:選び方の偏りを調整する', llm3: 'コンテキストウィンドウ:作業用の記憶', env1: '結果を先に', str1: '先に結果', tf1: '全体像', tf2: '結果を読む', tf3: '1行を詳しく見る', perm: 'allow・ask・denyのルール', md: 'どこに置くか', plan: '変更の前に、計画を見る', ll1: 'ローカルLLMとは', ll2: '必要なメモリを見積もる', sv1: '重みのほかに必要なもの', sv2: '複数人で使う', rag: '作るもの', pa: '全体のアーキテクチャ', pp: '権限は、検索の前に絞る', ag: '全体の構造', aw: '典型的なWebアプリの構成', sk: '全体の構成', df: 'デプロイの流れ', co: '全体の構成', k8: '全体のアーキテクチャ', gw: 'ゲートウェイ', sc: 'スケーリング', vc: 'データ層とベクトルDB', mr: 'モデルの役割と候補', dl1: 'ディープラーニングとは', dl2: '学習の流れ', lm1: '5つの軸で分ける', lm2: '選び方', mh: '早めに気づいて' }
+    : { llm1: 'Choosing the next word by probability', llm2: 'Temperature: adjusting how skewed', llm3: 'The context window: working memory', env1: 'The results first', str1: 'The results first', tf1: 'The big picture', tf2: 'Reading the result', tf3: 'Looking closely at one row', perm: 'allow, ask and deny rules', md: 'Where to put it', plan: 'See the plan before changing anything', ll1: 'What a local LLM is', ll2: 'Estimating the memory you need', sv1: 'Beyond the weights', sv2: 'Serving several people', rag: 'What we will build', pa: 'Overall architecture', pp: 'Permissions: filter before searching', ag: 'The structure', aw: 'A typical web app architecture', sk: 'The overall setup', df: 'The deployment flow', co: 'The overall setup', k8: 'Overall architecture', gw: 'Gateway', sc: 'Scaling', vc: 'Data layer and the vector database', mr: 'Roles and candidates', dl1: 'What deep learning is', dl2: 'How learning works', lm1: 'Sort along five axes', lm2: 'How to choose', mh: 'Notice early' };
   insert(`${L}/llm-how-it-works.md`, H.llm1, loop(L));
   insert(`${L}/llm-how-it-works.md`, H.llm1, trace(L), 'code');
   insert(`${L}/llm-how-it-works.md`, H.llm2, bars(L), 'code');
@@ -757,10 +773,11 @@ for (const L of ['ja', 'en']) {
   insert(`${L}/deep-learning-intro.md`, H.dl2, learnLoop(L));
   insert(`${L}/llm-models.md`, H.lm1, modelMap(L));
   insert(`${L}/llm-models.md`, H.lm2, modelChoice(L));
+  insert(`${L}/engineer-mental-health.md`, H.mh, mhFlow(L));
 }
 
 // 図の番号を、記事の中での出現順に振る
-for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models']) for (const L of ['ja', 'en']) {
+for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health']) for (const L of ['ja', 'en']) {
   const pth = dir + `${L}/${f}.md`; let n = 0;
   writeFileSync(pth, readFileSync(pth, 'utf8').replace(/\{\{N\}\}/g, () => ++n));
 }
