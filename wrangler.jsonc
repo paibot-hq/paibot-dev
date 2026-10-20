@@ -10,5 +10,7 @@
     "html_handling": "force-trailing-slash"
   },
   "routes": [{ "pattern": "paibot.dev", "custom_domain": true }],
-  "workers_dev": false
+  "workers_dev": false,
+  // Workers Builds が main 以外のブランチで npx wrangler preview を実行するのに要る(中身は空でよい)。
+  "previews": {}
 }
