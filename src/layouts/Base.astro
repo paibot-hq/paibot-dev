@@ -5,6 +5,10 @@ import Header from '../components/Header.astro';
 import SearchDialog from '../components/SearchDialog.astro';
 import { t } from '../i18n/utils.js';
 
+// Google AdSense パブリッシャーID(ca-pub-…)。AdSenseに登録して発行されたら入れる。空の間は何も出力しない。
+// ID を入れたら public/ads.txt も作る(google.com, pub-…, DIRECT, f08c47fec0942fa0)。
+const ADSENSE_CLIENT = 'ca-pub-8043848570527700';
+
 const { lang, title, description = t(lang, 'metaDescription') } = Astro.props;
 ---
 <!doctype html>
@@ -20,6 +24,7 @@ const { lang, title, description = t(lang, 'metaDescription') } = Astro.props;
     <title>{title}</title>
     <noscript><style>.code-panel[hidden] { display: block !important; } .code-tabs .code-tablist { display: none !important; }</style></noscript>
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    {ADSENSE_CLIENT && <script is:inline async crossorigin="anonymous" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}></script>}
     <script is:inline>
       (function () {
         var theme = null;
