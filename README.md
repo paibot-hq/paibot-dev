@@ -13,6 +13,15 @@ npm run build     # dist/ に静的ファイルを出力
 npm run preview   # ビルド結果を http://localhost:4321 で確認
 ```
 
+
+## デプロイ
+
+Cloudflare Workers の静的アセットとして `https://paibot.dev/` に出す(Worker のコードはない)。設定は `wrangler.jsonc`。
+
+- main に入ると Cloudflare の Workers Builds(GitHub 連携)がビルドして本番にデプロイする。ビルドコマンドは `npm run build`、デプロイコマンドは `npx wrangler deploy`
+- GitHub Actions(`.github/workflows/deploy.yml`)はビルドと `wrangler deploy --dry-run` の確認だけで、デプロイはしない
+- 手元からは `npm run deploy`(ビルドしてデプロイ)
+
 ## URL
 
 | パス | 内容 |

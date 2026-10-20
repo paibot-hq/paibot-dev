@@ -1,0 +1,25 @@
+name: Deploy
+
+# Build check only. The deploy to paibot.dev is done by Cloudflare Workers Builds when main changes.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Check the Worker config
+        run: npx wrangler deploy --dry-run

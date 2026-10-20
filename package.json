@@ -7,7 +7,8 @@
     "dev": "astro dev --port 4320",
     "build": "astro build",
     "preview": "astro preview --port 4321",
-    "check": "astro check"
+    "check": "astro check",
+    "deploy": "astro build && wrangler deploy"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -19,5 +20,8 @@
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "shiki": "^4.5.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.0"
   }
 }

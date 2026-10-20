@@ -1,0 +1,14 @@
+// paibot.dev: the static build (dist/) served as Worker assets, no Worker code.
+// Deployed by Cloudflare Workers Builds when main changes.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "paibot-dev",
+  "compatibility_date": "2026-10-14",
+  "assets": {
+    "directory": "./dist",
+    // Pages are folders with index.html and URLs end in a slash (trailingSlash: 'always' in astro.config.mjs).
+    "html_handling": "force-trailing-slash"
+  },
+  "routes": [{ "pattern": "paibot.dev", "custom_domain": true }],
+  "workers_dev": false
+}
