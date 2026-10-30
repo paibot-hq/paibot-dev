@@ -8,7 +8,7 @@ const copyLabel = { ja: 'コピー', en: 'Copy' };
 // ```js ラベル  →  ラベル付き・色付きのコードブロック(最初の語が言語、残りがラベル)
 // 色付けは Shiki でビルド時に行う。ブラウザに色付け用のJSは送らない。
 const THEME = 'github-dark';
-const LANGS = ['js', 'python', 'swift', 'rust', 'bash', 'powershell', 'bat', 'json', 'markdown', 'yaml'];
+const LANGS = ['js', 'python', 'swift', 'rust', 'bash', 'powershell', 'bat', 'json', 'markdown', 'yaml', 'sql'];
 const ALIAS = { py: 'python', javascript: 'js', sh: 'bash', shell: 'bash', md: 'markdown', ps1: 'powershell', cmd: 'bat', rs: 'rust' };
 let highlighter;
 const getHighlighter = () => (highlighter ??= createHighlighter({ themes: [THEME], langs: LANGS }));
