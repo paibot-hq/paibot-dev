@@ -807,15 +807,43 @@ function insert(file, headingPart, html, where = 'paragraph') {
   writeFileSync(p, lines.join('\n'));
   console.log('inserted:', file, headingPart);
 }
-for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line']) for (const L of ['ja', 'en']) {
+// sagasu:ビルド時に索引を作り、ブラウザで検索する
+function sagasuFlow(L) {
+  const T = L === 'ja'
+    ? { title: 'sagasuの構成:ビルド時に索引を作り、ブラウザで引く', build: 'ビルド時(CLI)', html: 'dist/**/*.html', htmlSub: 'ビルドしたサイト', body: '本文を取り出す', bodySub: '<main>の中だけ。nav・scriptは除く', fold: '畳み込み', foldSub: '全角半角・カナ→かな・長音を消す', gram: '2文字ずつ + 英単語', gramSub: '東京都 → 東京・京都', json: 'sagasu.json', jsonSub: '転置索引(このサイトでgzip 170KB)', load: '最初の検索のときに1回だけ読む', browser: 'ブラウザ', q: '検索語', qSub: 'ramen / ﾗｰﾒﾝ / javascirpt', wide: '候補を広げる', wideSub: 'ローマ字→かな・前方一致・打ち間違い', bm: 'BM25で点数 → AND', bmSub: '0件ならORに緩める。-語は除外', out: '並べ直してハイライト', outSub: '連続一致を上に。元の表記に<mark>', cap: '図{{N}} 索引はビルド時に1回作る。検索はすべてブラウザの中で、サーバーはいらない。どちらも同じ「畳み込み」を通すので、表記の違いが消える。' }
+    : { title: 'How sagasu works: index at build time, search in the browser', build: 'BUILD TIME (CLI)', html: 'dist/**/*.html', htmlSub: 'the built site', body: 'Extract the body', bodySub: 'inside <main>; nav and scripts dropped', fold: 'Fold', foldSub: 'width, katakana→hiragana, long vowel', gram: 'Bigrams + latin words', gramSub: '東京都 → 東京, 京都', json: 'sagasu.json', jsonSub: 'inverted index (170 KB gzipped here)', load: 'fetched once, on the first search', browser: 'BROWSER', q: 'Query', qSub: 'ramen / ﾗｰﾒﾝ / javascirpt', wide: 'Widen the terms', wideSub: 'romaji→kana, prefix, typos', bm: 'Score with BM25 → AND', bmSub: 'falls back to OR; -word excludes', out: 'Re-rank and highlight', outSub: 'phrases first; <mark> in the original', cap: 'Figure {{N}} The index is built once, at build time. Every search runs in the browser, with no server. Both sides go through the same folding, so spelling variants disappear.' };
+  const id = 'sg';
+  let b = grp(id, 8, 8, 384, 276, T.build);
+  b += nd(id, 24, 36, 352, 46, 'n', 'doc', T.html, T.htmlSub);
+  b += fl(id, 'M200 82 V96', 1.2);
+  b += nd(id, 24, 98, 352, 46, 'a', 'layers', T.body, T.bodySub);
+  b += fl(id, 'M200 144 V158', 1.2);
+  b += nd(id, 24, 160, 352, 46, 'a', 'convert', T.fold, T.foldSub);
+  b += fl(id, 'M200 206 V220', 1.2);
+  b += nd(id, 24, 222, 352, 46, 'a', 'grid', T.gram, T.gramSub);
+  b += fl(id, 'M200 268 V302', 1.4);
+  b += nd(id, 24, 304, 352, 46, 'ok', 'db', T.json, T.jsonSub);
+  b += fl(id, 'M200 350 V390', 1.6) + txt(212, 375, T.load, 'd-nsub');
+  b += grp(id, 8, 392, 384, 268, T.browser);
+  b += nd(id, 24, 420, 352, 46, 'n', 'search', T.q, T.qSub);
+  b += fl(id, 'M200 466 V480', 1.2);
+  b += nd(id, 24, 482, 352, 46, 'a', 'spark', T.wide, T.wideSub);
+  b += fl(id, 'M200 528 V542', 1.2);
+  b += nd(id, 24, 544, 352, 46, 'a', 'chart', T.bm, T.bmSub);
+  b += fl(id, 'M200 590 V604', 1.2);
+  b += nd(id, 24, 606, 352, 46, 'ok', 'check', T.out, T.outSub);
+  return fig2(id, 400, 668, T.title, b, T.cap);
+}
+
+for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line', 'sagasu']) for (const L of ['ja', 'en']) {
   const pth = dir + `${L}/${f}.md`; const lines = readFileSync(pth, 'utf8').split('\n'); const kept = [];
   lines.forEach((l, i) => { if (l.startsWith('<figure class="diagram">')) { if (kept.at(-1) === '') kept.pop(); } else kept.push(l); });
   writeFileSync(pth, kept.join('\n'));
 }
 for (const L of ['ja', 'en']) {
   const H = L === 'ja'
-    ? { llm1: '次の1語を、確率で選ぶ', llm2: '温度:選び方の偏りを調整する', llm3: 'コンテキストウィンドウ:作業用の記憶', env1: '結果を先に', str1: '先に結果', tf1: '全体像', tf2: '結果を読む', tf3: '1行を詳しく見る', perm: 'allow・ask・denyのルール', md: 'どこに置くか', plan: '変更の前に、計画を見る', ll1: 'ローカルLLMとは', ll2: '必要なメモリを見積もる', sv1: '重みのほかに必要なもの', sv2: '複数人で使う', rag: '作るもの', pa: '全体のアーキテクチャ', pp: '権限は、検索の前に絞る', ag: '全体の構造', aw: '典型的なWebアプリの構成', sk: '全体の構成', df: 'デプロイの流れ', co: '全体の構成', k8: '全体のアーキテクチャ', gw: 'ゲートウェイ', sc: 'スケーリング', vc: 'データ層とベクトルDB', mr: 'モデルの役割と候補', dl1: 'ディープラーニングとは', dl2: '学習の流れ', lm1: '5つの軸で分ける', lm2: '選び方', mh: '早めに気づいて', wt: '作業を中断せずに', pg: '全体の構成', ua: '先に結果', ag2: '分担' }
-    : { llm1: 'Choosing the next word by probability', llm2: 'Temperature: adjusting how skewed', llm3: 'The context window: working memory', env1: 'The results first', str1: 'The results first', tf1: 'The big picture', tf2: 'Reading the result', tf3: 'Looking closely at one row', perm: 'allow, ask and deny rules', md: 'Where to put it', plan: 'See the plan before changing anything', ll1: 'What a local LLM is', ll2: 'Estimating the memory you need', sv1: 'Beyond the weights', sv2: 'Serving several people', rag: 'What we will build', pa: 'Overall architecture', pp: 'Permissions: filter before searching', ag: 'The structure', aw: 'A typical web app architecture', sk: 'The overall setup', df: 'The deployment flow', co: 'The overall setup', k8: 'Overall architecture', gw: 'Gateway', sc: 'Scaling', vc: 'Data layer and the vector database', mr: 'Roles and candidates', dl1: 'What deep learning is', dl2: 'How learning works', lm1: 'Sort along five axes', lm2: 'How to choose', mh: 'Notice early', wt: 'Open another branch', pg: 'The overall path', ua: 'The results first', ag2: 'The split' };
+    ? { llm1: '次の1語を、確率で選ぶ', llm2: '温度:選び方の偏りを調整する', llm3: 'コンテキストウィンドウ:作業用の記憶', env1: '結果を先に', str1: '先に結果', tf1: '全体像', tf2: '結果を読む', tf3: '1行を詳しく見る', perm: 'allow・ask・denyのルール', md: 'どこに置くか', plan: '変更の前に、計画を見る', ll1: 'ローカルLLMとは', ll2: '必要なメモリを見積もる', sv1: '重みのほかに必要なもの', sv2: '複数人で使う', rag: '作るもの', pa: '全体のアーキテクチャ', pp: '権限は、検索の前に絞る', ag: '全体の構造', aw: '典型的なWebアプリの構成', sk: '全体の構成', df: 'デプロイの流れ', co: '全体の構成', k8: '全体のアーキテクチャ', gw: 'ゲートウェイ', sc: 'スケーリング', vc: 'データ層とベクトルDB', mr: 'モデルの役割と候補', dl1: 'ディープラーニングとは', dl2: '学習の流れ', lm1: '5つの軸で分ける', lm2: '選び方', mh: '早めに気づいて', wt: '作業を中断せずに', pg: '全体の構成', ua: '先に結果', ag2: '分担', sg: '先に結果' }
+    : { llm1: 'Choosing the next word by probability', llm2: 'Temperature: adjusting how skewed', llm3: 'The context window: working memory', env1: 'The results first', str1: 'The results first', tf1: 'The big picture', tf2: 'Reading the result', tf3: 'Looking closely at one row', perm: 'allow, ask and deny rules', md: 'Where to put it', plan: 'See the plan before changing anything', ll1: 'What a local LLM is', ll2: 'Estimating the memory you need', sv1: 'Beyond the weights', sv2: 'Serving several people', rag: 'What we will build', pa: 'Overall architecture', pp: 'Permissions: filter before searching', ag: 'The structure', aw: 'A typical web app architecture', sk: 'The overall setup', df: 'The deployment flow', co: 'The overall setup', k8: 'Overall architecture', gw: 'Gateway', sc: 'Scaling', vc: 'Data layer and the vector database', mr: 'Roles and candidates', dl1: 'What deep learning is', dl2: 'How learning works', lm1: 'Sort along five axes', lm2: 'How to choose', mh: 'Notice early', wt: 'Open another branch', pg: 'The overall path', ua: 'The results first', ag2: 'The split', sg: 'The results first' };
   insert(`${L}/llm-how-it-works.md`, H.llm1, loop(L));
   insert(`${L}/llm-how-it-works.md`, H.llm1, trace(L), 'code');
   insert(`${L}/llm-how-it-works.md`, H.llm2, bars(L), 'code');
@@ -850,10 +878,11 @@ for (const L of ['ja', 'en']) {
   insert(`${L}/workers-own-postgres.md`, H.pg, pgArch(L));
   insert(`${L}/postgres-union-all-in.md`, H.ua, unionPlans(L));
   insert(`${L}/ai-agent-production-line.md`, H.ag2, agentLanes(L));
+  insert(`${L}/sagasu.md`, H.sg, sagasuFlow(L));
 }
 
 // 図の番号を、記事の中での出現順に振る
-for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line']) for (const L of ['ja', 'en']) {
+for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line', 'sagasu']) for (const L of ['ja', 'en']) {
   const pth = dir + `${L}/${f}.md`; let n = 0;
   writeFileSync(pth, readFileSync(pth, 'utf8').replace(/\{\{N\}\}/g, () => ++n));
 }
