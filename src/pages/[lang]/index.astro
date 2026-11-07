@@ -8,28 +8,27 @@ import { getArticles, categoryOf } from '../../lib/articles.js';
 export function getStaticPaths() { return langs.map(lang => ({ params: { lang } })); }
 const { lang } = Astro.params;
 const articles = await getArticles(lang);
-const featured = articles[0];
-const related = articles.slice(1, 4);
+// 注目記事は frontmatter の featured: true の記事、なければ最新(orderが最大)。横の3本は、それ以外の新しい記事
+const newest = [...articles].sort((a, b) => b.order - a.order);
+const featured = newest.find(a => a.featured) ?? newest[0];
+const related = newest.filter(a => a !== featured).slice(0, 3);
 const featuredCat = categoryOf(featured.category, lang);
 ---
 <Base lang={lang} title={t(lang, 'docTitle')}>
   <div class="container">
     <section class="portal-intro"><div><span class="intro-label">Engineering, in practice.</span><h1>{t(lang, 'heroTitle')}</h1></div><p set:html={t(lang, 'heroText')} /></section>
     <section class="editorial-feature" aria-label={t(lang, 'featured')}>
-      <a class="lead-story" href={`/${lang}/articles/${featured.id}/`}>
-        <div class="lead-caption"><span class="eyebrow">FEATURED ARTICLE</span><span>{featuredCat.short.toUpperCase()}</span></div>
-        <div class="lead-grid">
-          <div><h2>{featured.title}</h2><p>{featured.description}</p><span class="story-link">{t(lang, 'readArticle')} <span>↗</span></span></div>
-          <div class="ai-process" aria-hidden="true"><span class="eyebrow">AI WORKFLOW</span>
-            <div><span>01</span><strong>{t(lang, 'process')[0]}</strong><small>Define</small></div>
-            <div><span>02</span><strong>{t(lang, 'process')[1]}</strong><small>Generate</small></div>
-            <div><span>03</span><strong>{t(lang, 'process')[2]}</strong><small>Verify</small></div>
-          </div>
+      <a class="lead-cover" href={`/${lang}/articles/${featured.id}/`}>
+        {featured.hero && <img src={featured.hero} width="1200" height="675" alt="" decoding="async" fetchpriority="high" />}
+        <div class="lead-cover-body">
+          <div class="lead-caption"><span class="eyebrow">FEATURED</span><span>{featuredCat.short.toUpperCase()}</span><span>{featured.minutes} MIN READ</span></div>
+          <h2>{featured.title}</h2>
+          <p>{featured.description}</p>
+          <span class="story-link">{t(lang, 'readArticle')} <span>↗</span></span>
         </div>
-        <div class="lead-footer"><span>{featured.tags.join(' / ')}</span><span>{featured.minutes} MIN READ →</span></div>
       </a>
       <aside class="feature-index"><span class="eyebrow">{t(lang, 'related')}</span>
-        {related.map(a => <a href={`/${lang}/articles/${a.id}/`}><div><span class="category-label">{categoryOf(a.category, lang).short.toUpperCase()}</span></div><h3>{a.title}</h3><span class="index-bottom">{a.type} · {t(lang, 'minutes', a.minutes)} <b>↗</b></span></a>)}
+        {related.map(a => <a class:list={[{ "has-thumb": a.hero }]} href={`/${lang}/articles/${a.id}/`}>{a.hero && <img src={a.hero} width="1200" height="675" alt="" loading="lazy" decoding="async" />}<div><span class="category-label">{categoryOf(a.category, lang).short.toUpperCase()}</span></div><h3>{a.title}</h3><span class="index-bottom">{a.type} · {t(lang, 'minutes', a.minutes)} <b>↗</b></span></a>)}
         <a href={`/${lang}/guides/`}><div><span class="category-label">READING GUIDE</span></div><h3>{t(lang, 'guideCardTitle')}</h3><span class="index-bottom">{t(lang, 'readInOrder', articles.length)} <b>↗</b></span></a>
       </aside>
     </section>

@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview --port 4321",
     "check": "astro check",
+    "hero": "node scripts/hero.mjs",
     "deploy": "astro build && wrangler deploy"
   },
   "engines": {

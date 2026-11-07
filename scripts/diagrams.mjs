@@ -785,6 +785,22 @@ function agentLanes(L) {
   return fig2(id, 400, 40 + T.s.length * 60, T.title, b, T.cap);
 }
 
+// ---- P: Cloudflareの請求:どこで課金され、どこで止めるか ----
+function cfBill(L) {
+  const T = L === 'ja'
+    ? { title: 'リクエストのどこで課金され、どこで止めるか', bot: 'クローラーと訪問者', botSub: '1日144万件のうち、約8割がAIの学習用', cf: 'Cloudflare', waf: 'WAFカスタムルール', wafSub: '学習用をUAで名指し → 403', wafPill: 'ここで止めれば $0', fn: 'Pages Functions(SSR)', fnSub: 'リクエスト数とCPU時間で課金', fnPill: '$21', db: 'D1(SQLite)', dbSub: '読んだ行数で課金。検索で2,288億行', dbPill: '$204', cap: '図{{N}} 料金は、関数が動いたときと、D1が行を読んだときにかかる。関数より手前のWAFで止めれば、そのリクエストは課金されない。' }
+    : { title: 'Where a request is billed, and where to stop it', bot: 'Crawlers and visitors', botSub: '1.44M a day; about 80% AI training', cf: 'CLOUDFLARE', waf: 'WAF custom rule', wafSub: 'name training bots by UA → 403', wafPill: 'stopped here: $0', fn: 'Pages Functions (SSR)', fnSub: 'billed by requests and CPU time', fnPill: '$21', db: 'D1 (SQLite)', dbSub: 'billed by rows read: 228.8B', dbPill: '$204', cap: 'Figure {{N}} You pay when the function runs and when D1 reads rows. Stop a request at the WAF, before the function, and it costs nothing.' };
+  const id = 'cb';
+  let b = nd(id, 24, 8, 352, 48, 'n', 'user', T.bot, T.botSub) + fl(id, 'M200 58 V102');
+  b += grp(id, 8, 74, 384, 268, T.cf);
+  b += nd(id, 24, 104, 352, 48, 'ok', 'shield', T.waf, T.wafSub);
+  b += fl(id, 'M200 154 V196', 1.4) + pill(220, 164, 'ok', T.wafPill, 156);
+  b += nd(id, 24, 198, 352, 48, 'w', 'spark', T.fn, T.fnSub) + pill(310, 211, 'w', T.fnPill, 56);
+  b += fl(id, 'M200 248 V280', 1.2);
+  b += nd(id, 24, 282, 352, 48, 'd', 'db', T.db, T.dbSub) + pill(310, 295, 'd', T.dbPill, 56);
+  return fig2(id, 400, 352, T.title, b, T.cap);
+}
+
 // ---- 記事への差し込み ----
 function insert(file, headingPart, html, where = 'paragraph') {
   const p = dir + file; let s = readFileSync(p, 'utf8');
@@ -835,15 +851,15 @@ function sagasuFlow(L) {
   return fig2(id, 400, 668, T.title, b, T.cap);
 }
 
-for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line', 'sagasu']) for (const L of ['ja', 'en']) {
+for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line', 'sagasu', 'cloudflare-bill-ai-crawlers']) for (const L of ['ja', 'en']) {
   const pth = dir + `${L}/${f}.md`; const lines = readFileSync(pth, 'utf8').split('\n'); const kept = [];
   lines.forEach((l, i) => { if (l.startsWith('<figure class="diagram">')) { if (kept.at(-1) === '') kept.pop(); } else kept.push(l); });
   writeFileSync(pth, kept.join('\n'));
 }
 for (const L of ['ja', 'en']) {
   const H = L === 'ja'
-    ? { llm1: '次の1語を、確率で選ぶ', llm2: '温度:選び方の偏りを調整する', llm3: 'コンテキストウィンドウ:作業用の記憶', env1: '結果を先に', str1: '先に結果', tf1: '全体像', tf2: '結果を読む', tf3: '1行を詳しく見る', perm: 'allow・ask・denyのルール', md: 'どこに置くか', plan: '変更の前に、計画を見る', ll1: 'ローカルLLMとは', ll2: '必要なメモリを見積もる', sv1: '重みのほかに必要なもの', sv2: '複数人で使う', rag: '作るもの', pa: '全体のアーキテクチャ', pp: '権限は、検索の前に絞る', ag: '全体の構造', aw: '典型的なWebアプリの構成', sk: '全体の構成', df: 'デプロイの流れ', co: '全体の構成', k8: '全体のアーキテクチャ', gw: 'ゲートウェイ', sc: 'スケーリング', vc: 'データ層とベクトルDB', mr: 'モデルの役割と候補', dl1: 'ディープラーニングとは', dl2: '学習の流れ', lm1: '5つの軸で分ける', lm2: '選び方', mh: '早めに気づいて', wt: '作業を中断せずに', pg: '全体の構成', ua: '先に結果', ag2: '分担', sg: '先に結果' }
-    : { llm1: 'Choosing the next word by probability', llm2: 'Temperature: adjusting how skewed', llm3: 'The context window: working memory', env1: 'The results first', str1: 'The results first', tf1: 'The big picture', tf2: 'Reading the result', tf3: 'Looking closely at one row', perm: 'allow, ask and deny rules', md: 'Where to put it', plan: 'See the plan before changing anything', ll1: 'What a local LLM is', ll2: 'Estimating the memory you need', sv1: 'Beyond the weights', sv2: 'Serving several people', rag: 'What we will build', pa: 'Overall architecture', pp: 'Permissions: filter before searching', ag: 'The structure', aw: 'A typical web app architecture', sk: 'The overall setup', df: 'The deployment flow', co: 'The overall setup', k8: 'Overall architecture', gw: 'Gateway', sc: 'Scaling', vc: 'Data layer and the vector database', mr: 'Roles and candidates', dl1: 'What deep learning is', dl2: 'How learning works', lm1: 'Sort along five axes', lm2: 'How to choose', mh: 'Notice early', wt: 'Open another branch', pg: 'The overall path', ua: 'The results first', ag2: 'The split', sg: 'The results first' };
+    ? { llm1: '次の1語を、確率で選ぶ', llm2: '温度:選び方の偏りを調整する', llm3: 'コンテキストウィンドウ:作業用の記憶', env1: '結果を先に', str1: '先に結果', tf1: '全体像', tf2: '結果を読む', tf3: '1行を詳しく見る', perm: 'allow・ask・denyのルール', md: 'どこに置くか', plan: '変更の前に、計画を見る', ll1: 'ローカルLLMとは', ll2: '必要なメモリを見積もる', sv1: '重みのほかに必要なもの', sv2: '複数人で使う', rag: '作るもの', pa: '全体のアーキテクチャ', pp: '権限は、検索の前に絞る', ag: '全体の構造', aw: '典型的なWebアプリの構成', sk: '全体の構成', df: 'デプロイの流れ', co: '全体の構成', k8: '全体のアーキテクチャ', gw: 'ゲートウェイ', sc: 'スケーリング', vc: 'データ層とベクトルDB', mr: 'モデルの役割と候補', dl1: 'ディープラーニングとは', dl2: '学習の流れ', lm1: '5つの軸で分ける', lm2: '選び方', mh: '早めに気づいて', wt: '作業を中断せずに', pg: '全体の構成', ua: '先に結果', ag2: '分担', sg: '先に結果', cb: '先に結果' }
+    : { llm1: 'Choosing the next word by probability', llm2: 'Temperature: adjusting how skewed', llm3: 'The context window: working memory', env1: 'The results first', str1: 'The results first', tf1: 'The big picture', tf2: 'Reading the result', tf3: 'Looking closely at one row', perm: 'allow, ask and deny rules', md: 'Where to put it', plan: 'See the plan before changing anything', ll1: 'What a local LLM is', ll2: 'Estimating the memory you need', sv1: 'Beyond the weights', sv2: 'Serving several people', rag: 'What we will build', pa: 'Overall architecture', pp: 'Permissions: filter before searching', ag: 'The structure', aw: 'A typical web app architecture', sk: 'The overall setup', df: 'The deployment flow', co: 'The overall setup', k8: 'Overall architecture', gw: 'Gateway', sc: 'Scaling', vc: 'Data layer and the vector database', mr: 'Roles and candidates', dl1: 'What deep learning is', dl2: 'How learning works', lm1: 'Sort along five axes', lm2: 'How to choose', mh: 'Notice early', wt: 'Open another branch', pg: 'The overall path', ua: 'The results first', ag2: 'The split', sg: 'The results first', cb: 'The results first' };
   insert(`${L}/llm-how-it-works.md`, H.llm1, loop(L));
   insert(`${L}/llm-how-it-works.md`, H.llm1, trace(L), 'code');
   insert(`${L}/llm-how-it-works.md`, H.llm2, bars(L), 'code');
@@ -879,10 +895,11 @@ for (const L of ['ja', 'en']) {
   insert(`${L}/postgres-union-all-in.md`, H.ua, unionPlans(L));
   insert(`${L}/ai-agent-production-line.md`, H.ag2, agentLanes(L));
   insert(`${L}/sagasu.md`, H.sg, sagasuFlow(L));
+  insert(`${L}/cloudflare-bill-ai-crawlers.md`, H.cb, cfBill(L));
 }
 
 // 図の番号を、記事の中での出現順に振る
-for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line', 'sagasu']) for (const L of ['ja', 'en']) {
+for (const f of ['llm-how-it-works', 'transformer-inside', 'protect-env-files', 'string-length', 'claude-code-permissions', 'claude-code-claude-md', 'claude-code-workflows', 'local-llm', 'local-llm-serving', 'local-llm-rag', 'local-llm-rag-production', 'aws-intro', 'startup-stack', 'colab-llm', 'deep-learning-intro', 'llm-models', 'engineer-mental-health', 'git-worktree', 'workers-own-postgres', 'postgres-union-all-in', 'ai-agent-production-line', 'sagasu', 'cloudflare-bill-ai-crawlers']) for (const L of ['ja', 'en']) {
   const pth = dir + `${L}/${f}.md`; let n = 0;
   writeFileSync(pth, readFileSync(pth, 'utf8').replace(/\{\{N\}\}/g, () => ++n));
 }
