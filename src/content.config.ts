@@ -15,6 +15,7 @@ const articles = defineCollection({
     level: z.string().optional(),
     takeaway: z.string().optional(),
     order: z.number(),
+    featured: z.boolean().optional(),
     sources: z.array(z.object({ title: z.string(), url: z.string().url() })).default([])
   })
 });
