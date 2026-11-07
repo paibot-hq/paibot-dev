@@ -16,7 +16,6 @@ const featuredCat = categoryOf(featured.category, lang);
 ---
 <Base lang={lang} title={t(lang, 'docTitle')}>
   <div class="container">
-    <section class="portal-intro"><div><span class="intro-label">Engineering, in practice.</span><h1>{t(lang, 'heroTitle')}</h1></div><p set:html={t(lang, 'heroText')} /></section>
     <section class="editorial-feature" aria-label={t(lang, 'featured')}>
       <a class="lead-cover" href={`/${lang}/articles/${featured.id}/`}>
         {featured.hero && <img src={featured.hero} width="1200" height="675" alt="" decoding="async" fetchpriority="high" />}
