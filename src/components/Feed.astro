@@ -4,7 +4,10 @@ import { categories } from '../data/site.js';
 import ArticleRow from './ArticleRow.astro';
 // filter: 'all' | カテゴリID | 'saved'
 const { lang, articles, filter = 'all', heading = true } = Astro.props;
-const shown = filter === 'all' || filter === 'saved' ? articles : articles.filter(a => a.category === filter);
+// 一覧は新しい記事(orderが大きい)を上に。記事ページの前後リンクなどは getArticles の order の昇順のまま
+const newest = [...articles].sort((a, b) => b.order - a.order);
+const shown = filter === 'all' || filter === 'saved' ? newest : newest.filter(a => a.category === filter);
+const catCounts = categories.map(c => ({ ...c, n: articles.filter(a => a.category === c.id).length })).filter(c => c.n > 0);
 const pending = filter !== 'all' && filter !== 'saved' && shown.length === 0;
 const filters = [{ id: 'all', label: lang === 'ja' ? 'すべて' : 'All', href: `/${lang}/articles/` },
   ...categories.map(c => ({ id: c.id, label: c.name[lang], href: `/${lang}/category/${c.id}/` })),
@@ -26,8 +29,8 @@ const filters = [{ id: 'all', label: lang === 'ja' ? 'すべて' : 'All', href: 
       )}
     </div>
     <aside class="sidebar">
-      <section class="desk-index"><div class="section-heading"><h3>{t(lang, 'sideAll')}</h3><span class="eyebrow">TOPICS</span></div>
-        {articles.map((a, i) => <a href={`/${lang}/articles/${a.id}/`}><span>{String(i + 1).padStart(2, '0')}</span><div>{a.title}<small>{a.type} · {t(lang, 'minutes', a.minutes)}</small></div>↗</a>)}
+      <section class="desk-index"><div class="section-heading"><h3>{t(lang, 'sideCats')}</h3><span class="eyebrow">CATEGORIES</span></div>
+        {catCounts.map(c => <a href={`/${lang}/category/${c.id}/`} aria-current={c.id === filter ? 'page' : undefined}><span>{c.icon}</span><div>{c.name[lang]}<small>{t(lang, 'articleCount', c.n)}</small></div>↗</a>)}
       </section>
       <section class="start-card"><span class="eyebrow">READING GUIDE</span><h3 set:html={t(lang, 'sideStartTitle')} /><p>{t(lang, 'sideStartText')}</p><a href={`/${lang}/guides/`}>{t(lang, 'sideStartLink')} <span>→</span></a></section>
       <section class="resource-sidebar"><div class="section-heading"><h3>{t(lang, 'sideTools')}</h3><span class="eyebrow">TOOLBOX</span></div><a class="resource-link" href={`/${lang}/tools/`}><span><strong>{t(lang, 'sideJson')}</strong><small>{t(lang, 'sideJsonText')}</small></span><span aria-hidden="true">↗</span></a></section>

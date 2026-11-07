@@ -189,6 +189,8 @@ kbd { font: 9px var(--mono); border: 1px solid var(--line); border-radius: 3px; 
 .desk-index>a>span { font: 9px var(--mono); color: var(--c-96968e); }
 .desk-index>a>div { flex: 1; font-size: 11px; }
 .desk-index small { display: block; font-size: 9px; line-height: 1.7; color: var(--muted); margin-top: 5px; }
+.desk-index>a>span { min-width: 24px; font-size: 11px; }
+.desk-index>a[aria-current="page"] { color: var(--accent); }
 .start-card { background: var(--c-f0f3f7); border: 1px solid var(--c-e6ebf1); margin-top: 29px; padding: 24px; border-radius: 6px; }
 .start-card>.eyebrow { font-size: 8px; color: var(--muted); }
 .start-card h3 { font-size: 19px; line-height: 1.85; font-weight: 400; margin: 15px 0; }
