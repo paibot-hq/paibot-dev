@@ -8,8 +8,10 @@ import { getArticles, categoryOf } from '../../lib/articles.js';
 export function getStaticPaths() { return langs.map(lang => ({ params: { lang } })); }
 const { lang } = Astro.params;
 const articles = await getArticles(lang);
-const featured = articles[0];
-const related = articles.slice(1, 4);
+// 注目記事と関連記事は、新しい記事(orderが大きい)から
+const newest = [...articles].sort((a, b) => b.order - a.order);
+const featured = newest[0];
+const related = newest.slice(1, 4);
 const featuredCat = categoryOf(featured.category, lang);
 ---
 <Base lang={lang} title={t(lang, 'docTitle')}>
